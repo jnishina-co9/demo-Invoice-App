@@ -480,6 +480,20 @@
     opacity: 0.5;
   }
 
+  .demo-video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 16px auto 0 auto;
+  }
+
+  .demo-video-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--color-border);
+  }
+
   /* =============================================
      FLOW DIAGRAM
   ============================================= */
@@ -549,20 +563,6 @@
     font-size: 16px;
     color: var(--color-text-sub);
     line-height: 1.7;
-  }
-
-  .demo-video-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    margin: 16px auto 0 auto;
-  }
-
-  .demo-video-wrapper video {
-    width: 100%;
-    height: auto;
-    display: block;
-    border: 1px solid var(--color-border);
   }
 
   /* =============================================
@@ -636,184 +636,175 @@
     .section-title { font-size: 16px; }
     .section-num { font-size: 18px; }
     .accordion__title, .flow-step__title { font-size: 14px; }
-    .accordion__body p, .spec-block li, .flow-step__desc, .app-card__table td, #sec-7 .section-body p { font-size: 14px; }
+    .accordion__body p, .spec-block li, .flow-step__desc, .app-card__table td { font-size: 14px; }
     .nav__item, .app-card__table th, .meta-badge__value, .tech-tag, .url-link, .flow-step__num { font-size: 13px; }
     .sidebar__doc-type, .nav__section-label, .nav__item-num, .meta-badge__label, .accordion__tag, .spec-block__label { font-size: 11px; }
     .content { padding: 24px 20px; }
+    .block-grid { grid-template-columns: 1fr; }
 
     .menu-toggle {
-      display: flex !important;
+      display: flex;
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      background: var(--color-main);
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 300;
+      border: none;
     }
+
+    .scroll-top-btn {
+      display: flex;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 99;
+    }
+    .overlay.is-active { display: block; }
   }
 
   /* =============================================
-     UI BUTTONS (MOBILE ONLY)
+     SCROLL TO TOP BUTTON
   ============================================= */
-  .menu-toggle {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    width: 40px;
-    height: 40px;
-    background: var(--color-main);
-    color: var(--color-base);
-    border: none;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-    cursor: pointer;
-  }
-
-  .menu-toggle svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-  }
-
   .scroll-top-btn {
+    display: none;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 24px;
+    right: 16px;
     width: 44px;
     height: 44px;
-    background: var(--color-main);
-    color: var(--color-base);
-    border: none;
-    border-radius: 0;
-    display: none;
+    background: var(--color-text);
+    color: #fff;
     align-items: center;
     justify-content: center;
-    z-index: 200;
     cursor: pointer;
+    z-index: 200;
+    border: none;
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.25s, transform 0.25s;
+    transition: opacity 0.3s ease;
   }
 
-  .scroll-top-btn.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .scroll-top-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-  }
-
-  /* OVERLAY FOR MOBILE SIDEBAR */
-  .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.4);
-    z-index: 90;
-    display: none;
-  }
-
-  .sidebar-overlay.is-active {
-    display: block;
-  }
+  .scroll-top-btn.is-visible { opacity: 1; }
 
   /* =============================================
-     PRINT STYLES
+     PRINT
   ============================================= */
   @media print {
-    .sidebar, .reading-progress, .menu-toggle, .scroll-top-btn, .sidebar-overlay { display: none !important; }
+    .sidebar, .reading-progress, .menu-toggle, .scroll-top-btn { display: none !important; }
     .main { margin-left: 0; }
     .accordion__body { display: block !important; }
     .accordion__icon { display: none; }
     .page-header { background: none; padding: 0 0 24px; border-bottom: 2px solid #000; }
     .page-header__title, .page-header__subtitle { color: #000; }
+    .page-header__eyebrow, .meta-badge__label { color: #666; }
+    .meta-badge__value { color: #000; }
   }
 </style>
 </head>
 <body>
 
-<!-- READING PROGRESS -->
-<div class="reading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+<!-- 読書進捗バー -->
+<div class="reading-progress" role="progressbar" aria-label="読書進捗">
   <div class="reading-progress__bar" id="progressBar"></div>
 </div>
 
-<!-- MOBILE MENU TOGGLE -->
-<button class="menu-toggle" id="menuToggle" aria-label="メニューを開閉する" aria-controls="sidebar">
-  <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round"/></svg>
+<!-- モバイルオーバーレイ -->
+<div class="overlay" id="overlay"></div>
+
+<!-- メニューボタン（SP時・右上固定） -->
+<button class="menu-toggle" id="menuToggle" aria-label="目次を開く" style="display:none;">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
 
-<div class="sidebar-overlay" id="overlay"></div>
+<!-- トップへ戻るボタン（SP時・右下固定） -->
+<button class="scroll-top-btn" id="scrollTopBtn" aria-label="ページ先頭に戻る">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
-<!-- SHELL LAYOUT -->
 <div class="layout">
 
-  <!-- SIDEBAR (NAVIGATION) -->
-  <aside class="sidebar" id="sidebar">
+  <!-- ======= SIDEBAR ======= -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="目次">
     <div class="sidebar__brand">
-      <a href="#" class="sidebar__app-name">Invoice App</a>
-      <div class="sidebar__doc-type">Product Specifications</div>
+      <a href="#" class="sidebar__app-name">DEMO-INVOICE-APP</a>
+      <div class="sidebar__doc-type">プロダクト仕様書 v1.0</div>
     </div>
+
     <nav class="sidebar__nav">
       <div class="nav__section-label">Overview</div>
-      <a class="nav__item" id="nav-0" href="#sec-0">
-        <span class="nav__item-num">00</span> 基本情報
-      </a>
-      <a class="nav__item" id="nav-1" href="#sec-1">
-        <span class="nav__item-num">01</span> アプリ概要
+      <a class="nav__item" href="#sec-0" id="nav-0">
+        <span class="nav__item-num">00</span>基本情報
       </a>
 
       <div class="nav__section-label">Requirements</div>
-      <a class="nav__item" id="nav-2" href="#sec-2">
-        <span class="nav__item-num">02</span> 使用技術
+      <a class="nav__item" href="#sec-1" id="nav-1">
+        <span class="nav__item-num">01</span>アプリ概要
       </a>
-      <a class="nav__item" id="nav-3" href="#sec-3">
-        <span class="nav__item-num">03</span> 主な機能
+      <a class="nav__item" href="#sec-2" id="nav-2">
+        <span class="nav__item-num">02</span>使用技術
+      </a>
+      <a class="nav__item" href="#sec-3" id="nav-3">
+        <span class="nav__item-num">03</span>主な機能
       </a>
 
-      <div class="nav__section-label">Design & Architecture</div>
-      <a class="nav__item" id="nav-4" href="#sec-4">
-        <span class="nav__item-num">04</span> UI / UX の工夫
+      <div class="nav__section-label">Design</div>
+      <a class="nav__item" href="#sec-4" id="nav-4">
+        <span class="nav__item-num">04</span>UI / UX の工夫
       </a>
-      <a class="nav__item" id="nav-5" href="#sec-5">
-        <span class="nav__item-num">05</span> 技術的工夫
+      <a class="nav__item" href="#sec-5" id="nav-5">
+        <span class="nav__item-num">05</span>技術的工夫
       </a>
-      <a class="nav__item" id="nav-6" href="#sec-6">
-        <span class="nav__item-num">06</span> 処理フロー
+
+      <div class="nav__section-label">Architecture</div>
+      <a class="nav__item" href="#sec-6" id="nav-6">
+        <span class="nav__item-num">06</span>処理フロー
       </a>
 
       <div class="nav__section-label">Conclusion</div>
-      <a class="nav__item" id="nav-7" href="#sec-7">
-        <span class="nav__item-num">07</span> おわりに
+      <a class="nav__item" href="#sec-7" id="nav-7">
+        <span class="nav__item-num">07</span>おわりに
       </a>
     </nav>
   </aside>
 
-  <!-- MAIN COLUMN -->
+  <!-- ======= MAIN ======= -->
   <div class="main">
 
     <!-- PAGE HEADER -->
     <header class="page-header">
-      <div class="page-header__eyebrow">Product Specifications</div>
+      <div class="page-header__eyebrow">PRODUCT SPECIFICATION</div>
       <h1 class="page-header__title">demo-Invoice-App</h1>
-      <p class="page-header__subtitle">個人事業者・フリーランス向け 請求書作成＆管理アプリ 仕様書</p>
+      <div class="page-header__subtitle">個人事業者・フリーランス向け 請求書作成＆管理アプリ 仕様書</div>
       <div class="page-header__meta">
         <div class="meta-badge">
-          <span class="meta-badge__label">Created</span>
-          <span class="meta-badge__value">2026/07/06</span>
+          <span class="meta-badge__label">Version</span>
+          <span class="meta-badge__value">v1.0</span>
         </div>
         <div class="meta-badge">
-          <span class="meta-badge__label">Author</span>
-          <span class="meta-badge__value">Junko Nishina</span>
+          <span class="meta-badge__label">Status</span>
+          <span class="meta-badge__value">公開中</span>
+        </div>
+        <div class="meta-badge">
+          <span class="meta-badge__label">Tech Stack</span>
+          <span class="meta-badge__value">HTML / CSS / JavaScript</span>
+        </div>
+        <div class="meta-badge">
+          <span class="meta-badge__label">Updated</span>
+          <span class="meta-badge__value">2026-07</span>
         </div>
       </div>
     </header>
 
-    <!-- CONTENT AREA -->
+    <!-- CONTENT -->
     <main class="content">
 
       <!-- ================================
@@ -824,10 +815,11 @@
           <span class="section-num">00</span>
           <h2 class="section-title" id="title-0">基本情報</h2>
         </div>
-        <div class="section-body">
-          <div class="app-card">
-            <div class="app-card__title">Quick Summary</div>
-            <table class="app-card__table">
+
+        <div class="app-card">
+          <div class="app-card__title">Quick Summary</div>
+          <table class="app-card__table">
+            <tbody>
               <tr>
                 <th>アプリ概要</th>
                 <td>ブラウザ上で案件管理とインボイス制度対応の請求書作成が完結する完全無料のWebツール</td>
@@ -838,7 +830,6 @@
                   <span class="tech-tag">HTML5</span>
                   <span class="tech-tag">Vanilla CSS</span>
                   <span class="tech-tag">JavaScript (ES6)</span>
-                  <span class="tech-tag">Lucide Icons</span>
                 </td>
               </tr>
               <tr>
@@ -846,29 +837,31 @@
                 <td>完全クライアントサイド（お使いのブラウザ）処理。データを外部サーバーに送信せず、ブラウザの保存領域（localStorage）で安全に管理</td>
               </tr>
               <tr>
-                <th>公開URL</th>
-                <td><a href="./index.html" class="url-link">demo-Invoice-App アプリ本体を開く</a></td>
+                <th>公開 URL</th>
+                <td>
+                  <a href="https://jnishina-co9.github.io/demo-Invoice-App/index.html" class="url-link">https://jnishina-co9.github.io/demo-Invoice-App/index.html</a>
+                </td>
               </tr>
-            </table>
-          </div>
+            </tbody>
+          </table>
+        </div>
 
-          <div class="block-grid">
-            <div class="spec-block spec-block--premise">
-              <div class="spec-block__label">アプリの動作ルール</div>
-              <ul>
-                <li>インターネットブラウザ（Google Chrome等）で動作します</li>
-                <li>PC・スマホ等にアプリを直接インストールする必要はありません</li>
-                <li>完全無料・ユーザー登録不要でご利用いただけます</li>
-              </ul>
-            </div>
-            <div class="spec-block spec-block--constraint">
-              <div class="spec-block__label">ご利用時の注意点</div>
-              <ul>
-                <li>複数端末間での自動データ同期機能はありません</li>
-                <li>サーバーサイド処理（ユーザー管理やデータベース保存）は行いません</li>
-                <li>Internet Explorerなど古いブラウザは動作保証外となります</li>
-              </ul>
-            </div>
+        <div class="block-grid">
+          <div class="spec-block spec-block--premise">
+            <div class="spec-block__label">アプリの動作ルール</div>
+            <ul>
+              <li>インターネットブラウザ（Google Chrome等）で動作します</li>
+              <li>PC・スマホ等にアプリを直接インストールする必要はありません</li>
+              <li>完全無料・ユーザー登録不要でご利用いただけます</li>
+            </ul>
+          </div>
+          <div class="spec-block spec-block--constraint">
+            <div class="spec-block__label">ご利用時の注意点</div>
+            <ul>
+              <li>複数端末間での自動データ同期機能はありません</li>
+              <li>サーバーサイド処理（ユーザー管理やデータベース保存）は行いません</li>
+              <li>Internet Explorerなど古いブラウザは動作保証外となります</li>
+            </ul>
           </div>
         </div>
       </section>
@@ -882,18 +875,31 @@
           <h2 class="section-title" id="title-1">アプリ概要</h2>
         </div>
         <div class="section-body">
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+
+          <div class="accordion is-open" id="acc-1-1">
+            <button class="accordion__trigger" aria-expanded="true" aria-controls="body-1-1">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--rationale">背景・理由</span>
-                <span class="accordion__title">何を作ったか、なぜ作ったか</span>
+                <span class="accordion__tag accordion__tag--feature">概要</span>
+                <span class="accordion__title">何を作ったか</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-1-1">
+              <p>個人事業主や小規模事業者が、日々の案件管理（ステータス追跡）から、インボイス制度（適格請求書等保存方式）に準拠した請求書の作成・PDF出力までをブラウザだけで簡単に行えるツールです。</p>
             </div>
-            <div class="accordion__body">
-              <p><strong>何を作ったか：</strong><br>個人事業主や小規模事業者が、日々の案件管理（ステータス追跡）から、インボイス制度（適格請求書等保存方式）に準拠した請求書の作成・PDF出力までをブラウザだけで簡単に行えるツールです。</p>
-              <p><strong>背景と課題：</strong><br>フリーランスや小規模事業者にとって、案件の進捗管理と請求書発行は必須業務ですが、専用の有料ツールを導入するほどではない場合があります。また、一般的なクラウド請求書サービスは有料またはデータ登録に上限があり、無料のExcelテンプレート等は手動管理の手間や入力ミスの懸念があります。</p>
-              <p><strong>解決策：</strong><br>ログインやサーバー送信を行わず、完全にブラウザ内だけでセキュア（安全）かつ軽快に動作する管理ボード一体型の請求書作成ツールを開発しました。</p>
+          </div>
+
+          <div class="accordion" id="acc-1-2">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-1-2">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--rationale">背景・動機</span>
+                <span class="accordion__title">なぜ作ったか</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-1-2">
+              <p>個人事業主や小規模事業者にとって、案件の進捗管理と請求書発行は必須業務ですが、専用の有料ツールを導入するほどではない場合が多々あります。また、一般的なクラウド請求書サービスは有料であったり、登録データ数に上限が設けられていたりします。無料のExcelテンプレート等では手動管理の手間や入力ミスの懸念もあります。</p>
+              <p>そこで、ログインやサーバーへのデータ送信を一切行わず、完全にブラウザ内だけで安全かつ軽快に動作する管理ボード一体型の請求書作成ツールを開発しました。</p>
             </div>
           </div>
 
@@ -905,6 +911,7 @@
               </video>
             </div>
           </div>
+
         </div>
       </section>
 
@@ -917,35 +924,36 @@
           <h2 class="section-title" id="title-2">使用技術</h2>
         </div>
         <div class="section-body">
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+
+          <div class="accordion is-open" id="acc-2-1">
+            <button class="accordion__trigger" aria-expanded="true" aria-controls="body-2-1">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--tech">技術・実装</span>
+                <span class="accordion__tag accordion__tag--tech">採用技術</span>
                 <span class="accordion__title">採用技術とライブラリの詳細</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p><strong>HTML5 & Vanilla CSS:</strong><br>フレームワーク（デザインの雛形）を使用せず、クリーンで軽量なCSSコードで全体のレイアウトを構築しています。これにより、PC・スマホどちらでも見やすいレスポンシブ（画面幅自動調整）デザインを実現しました。</p>
-              <p><strong>JavaScript (ES6) & localStorage:</strong><br>フロントエンド（ブラウザ上）のスクリプト処理のみで、すべてのデータの追加・更新・削除・並び替え（ドラッグ＆ドロップ）およびlocalStorage（ブラウザ専用のデータ記憶機能）への自動保存を実現しています。</p>
-              <p><strong>Lucide Icons:</strong><br>オープンソースの軽量でスタイリッシュなベクター（拡大縮小しても荒れない）アイコンを画面に配置しています。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-2-1">
+              <p>HTML、CSS、JavaScriptというブラウザ標準の基礎技術を採用し、外部の重いフレームワークに依存せず高速かつ軽量に動作します。</p>
+              <p>入力したデータは、ブラウザが標準で備える保存領域であるlocalStorageに保管されるため、ページを閉じてもデータが失われません。</p>
+              <p>案件管理ボードはHTML5 Drag and Drop APIを利用し、マウス操作でカードを動かして直感的にステータスを更新できます。</p>
+              <p>CSS FlexboxやGridを活用し、PC・スマートフォン・タブレットなどあらゆる画面サイズに対応するレスポンシブデザインを実現しています。</p>
             </div>
           </div>
 
-          <div class="block-grid">
-            <div class="spec-block spec-block--premise">
-              <div class="spec-block__label">アプリの動作ルール</div>
-              <ul>
-                <li>外部ライブラリはすべてCDN（外部配信サーバー経由）で読み込むため、ローカルでのビルド（結合処理）は不要です。</li>
-              </ul>
-            </div>
-            <div class="spec-block spec-block--constraint">
-              <div class="spec-block__label">ご利用時の注意点</div>
-              <ul>
-                <li>ブラウザのキャッシュクリア（Cookieやサイトデータの削除）を行うと、保存されたデータも消去されるためご注意ください。</li>
-              </ul>
-            </div>
+          <div class="spec-block spec-block--premise">
+            <div class="spec-block__label">アプリの動作ルール</div>
+            <ul>
+              <li>外部ライブラリはすべてCDN（外部配信サーバー経由）で読み込むため、ローカルでのビルド（結合処理）は不要です。</li>
+            </ul>
           </div>
+          <div class="spec-block spec-block--constraint">
+            <div class="spec-block__label">ご利用時の注意点</div>
+            <ul>
+              <li>ブラウザのキャッシュクリア（Cookieやサイトデータの削除）を行うと、保存されたデータも消去されるためご注意ください。</li>
+            </ul>
+          </div>
+
         </div>
       </section>
 
@@ -958,51 +966,116 @@
           <h2 class="section-title" id="title-3">主な機能</h2>
         </div>
         <div class="section-body">
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+
+          <div class="accordion is-open" id="acc-3-1">
+            <button class="accordion__trigger" aria-expanded="true" aria-controls="body-3-1">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--feature">機能説明</span>
-                <span class="accordion__title">案件のステータス管理（カンバンボード） ＆ ドラッグ＆ドロップ</span>
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">カンバン方式による視覚的な案件管理ボード</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p>「未着手」「対応中」「請求済み」「入金済み」の4つのステータス列に案件カードを配置し、進捗状況を視覚的に把握できます。マウス操作で案件カードを隣のカラムにドラッグするだけで、ステータスが即座に変更・保存されます。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-1">
+              <p>未着手・対応中・請求済み・入金済みの4つの状況に分かれたボード上で、案件のカードをドラッグ＆ドロップするだけで状況を素早く更新できます。</p>
             </div>
           </div>
 
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+          <div class="accordion" id="acc-3-2">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-2">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--feature">機能説明</span>
-                <span class="accordion__title">クライアント管理 ＆ 請求元の設定</span>
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">クライアント管理機能</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p>よく取引するクライアント（請求先）の一覧を作成・編集できます。ここで変更した名前は、登録済みの全案件に連動して自動反映されます。</p>
-              <p>また、自身の会社名/屋号、振込先口座情報に加え、インボイス制度で必須となる「適格請求書発行事業者の登録番号（T+13桁）」を設定・保存できます。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-2">
+              <p>取引先の名前を追加、変更、削除できます。ここで名前を変更すると、登録済みの案件の取引先名も自動的にすべて書き換わります。</p>
             </div>
           </div>
 
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+          <div class="accordion" id="acc-3-3">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-3">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--feature">機能説明</span>
-                <span class="accordion__title">請求書作成 ＆ PDF印刷出力</span>
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">請求元の基本情報設定</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p>任意のクライアントと対象月を指定することで、該当月の案件データを自動集計し、インボイス制度に準拠した請求書をプレビュー表示します。</p>
-              <p>そのままブラウザの印刷機能を呼び出して、プレビュー画面だけをA4のPDFとしてローカルへ美しく出力（印刷）できます。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-3">
+              <p>自身の会社名・屋号・住所・インボイス制度の登録番号・振込先口座情報を登録し、安全に保存・管理できます。</p>
             </div>
           </div>
+
+          <div class="accordion" id="acc-3-4">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-4">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">月別の自動請求書作成・プレビュー機能</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-4">
+              <p>対象の月と取引先を指定すると、その月に「対応中」のステータスになっている案件を自動で集計し、綺麗な請求書のプレビュー画面を瞬時に作成します。（※納期が設定されていない「対応中」の案件は、誤請求を防ぐため集計対象外となります）</p>
+            </div>
+          </div>
+
+          <div class="accordion" id="acc-3-5">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-5">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">印刷および一括PDFダウンロード機能</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-5">
+              <p>プレビューされた請求書を、A4サイズに最適化された綺麗なレイアウトで印刷したり、PDFとして保存したりできます。印刷時またはステータスの一括更新時に「請求済みとして記録しますか？」という確認ダイアログが表示され、利用者が承認した場合のみ該当する案件を「請求済み」のステータスに更新します（※いいえを選択した場合でも印刷自体は実行されます）。</p>
+            </div>
+          </div>
+
+          <div class="accordion" id="acc-3-6">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-6">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">今月の予定売上金リアルタイム集計</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-6">
+              <p>各案件に設定された「納期」の月を基準とし、当月が期限となっている「対応中」および「請求済み」の案件金額を合計し、画面の右上に「今月予定 ¥○○」として常に最新の合計額をリアルタイム表示します。</p>
+            </div>
+          </div>
+
+          <div class="accordion" id="acc-3-7">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-7">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">日付の選択を補助するカスタム日付ピッカー</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-7">
+              <p>カレンダーを見ながらマウス操作だけで納期や発行日、支払期日などを正しく入力できる、使い勝手の良い日付選択画面を用意しています。</p>
+            </div>
+          </div>
+
+          <div class="accordion" id="acc-3-8">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-3-8">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--feature">機能</span>
+                <span class="accordion__title">初回の試用を助けるデモデータの自動インストール</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-3-8">
+              <p>アプリを初めて開いたときに、操作のイメージが湧きやすいようにサンプルデータを自動でセットアップします。</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
       <!-- ================================
-           SECTION 4: UI / UX の工夫
+           SECTION 4: UI/UXの工夫
       ================================ -->
       <section class="spec-section" id="sec-4" aria-labelledby="title-4">
         <div class="section-header">
@@ -1010,44 +1083,59 @@
           <h2 class="section-title" id="title-4">UI / UX の工夫</h2>
         </div>
         <div class="section-body">
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+
+          <div class="accordion is-open" id="acc-4-1">
+            <button class="accordion__trigger" aria-expanded="true" aria-controls="body-4-1">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--design">デザイン / UX</span>
-                <span class="accordion__title">直感的な今月予定の自動計算</span>
+                <span class="accordion__tag accordion__tag--design">デザイン</span>
+                <span class="accordion__title">カンバンボードによる直感的な操作感</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p>「対応中」および「請求済み」ステータスの今月納期の案件金額を自動で合算し、ダッシュボード上部にリアルタイム表示します。これにより、今月の売上見込みが一目でわかります。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-4-1">
+              <p>書類のステータスを切り替えるのに、難しい操作や入力は不要です。カードを希望の列にマウスで運ぶだけで、直感的かつスムーズに整理整頓が可能です（※上部のステータスチップは件数カウンターです）。</p>
             </div>
           </div>
 
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+          <div class="accordion" id="acc-4-2">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-4-2">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--design">デザイン / UX</span>
-                <span class="accordion__title">独自のデイトピッカー・マンスピッカー</span>
+                <span class="accordion__tag accordion__tag--design">UX</span>
+                <span class="accordion__title">納期に応じた警告カラー表示（ハイライト）</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p>ブラウザ標準の味気ない入力フォームではなく、全体のモダンなデザインに馴染むカスタムカレンダー（日付・月選択機能）をJavaScriptで内製し、直感的な操作感を実現しました。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-4-2">
+              <p>納期が過ぎてしまった案件は赤色の文字と警告アイコンで表示し、納期が3日以内に迫っている案件はオレンジ色の文字で強調表示することで、対応漏れを防ぎます。今日の日付から動的に判定を行うため、当月以外の案件であっても期限間近や期限切れのものは警告カラーが適用されます。</p>
             </div>
           </div>
 
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+          <div class="accordion" id="acc-4-3">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-4-3">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--design">デザイン / UX</span>
-                <span class="accordion__title">カード上の期限アラート</span>
+                <span class="accordion__tag accordion__tag--design">UX</span>
+                <span class="accordion__title">請求書のリアルタイム反映と使いやすい画面設計</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p>今月が納期の案件や、期日を過ぎた「未着手」「対応中」の案件は、期限表示が自動で色分け（赤やオレンジ）され、対応漏れや請求漏れを防ぎます。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-4-3">
+              <p>請求書の敬称（御中 / 様）の切り替えや、備考欄（手数料の負担など）への入力が、プレビュー画面にその場で即座に反映され、仕上がりを確認しながら作業できます。</p>
             </div>
           </div>
+
+          <div class="accordion" id="acc-4-4">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-4-4">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--design">レスポンシブ</span>
+                <span class="accordion__title">あらゆる画面サイズに自動で形が変わるレスポンシブデザイン</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-4-4">
+              <p>パソコンの大画面だけでなく、スマートフォンやタブレットなどの小さな画面でも、メニューや入力欄が押しやすい配置へと自動的に並び変わります。</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -1060,18 +1148,46 @@
           <h2 class="section-title" id="title-5">技術的工夫（差別化ポイント）</h2>
         </div>
         <div class="section-body">
-          <div class="accordion">
-            <div class="accordion__trigger" aria-expanded="false" role="button" tabindex="0">
+
+          <div class="accordion is-open" id="acc-5-1">
+            <button class="accordion__trigger" aria-expanded="true" aria-controls="body-5-1">
               <div class="accordion__trigger-left">
-                <span class="accordion__tag accordion__tag--tech">コア技術</span>
-                <span class="accordion__title">完全フロントエンド（サーバーレス）構成の選択理由</span>
+                <span class="accordion__tag accordion__tag--tech">セキュリティ</span>
+                <span class="accordion__title">情報漏洩を物理的に防ぐ「完全サーバーレス」設計</span>
               </div>
-              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div class="accordion__body">
-              <p><strong>セキュリティとプライバシーの極大化：</strong><br>請求金額や取引先情報といった極めて機微な情報を扱うため、情報をインターネット上の外部サーバーへ一切送信しない安全設計を採用しました。ブラウザ内の安全な記憶領域（localStorage）だけで処理が完結するため、情報漏洩や他者からの覗き見といったリスクを100%防止しています。</p>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-5-1">
+              <p>外部サーバーへのデータ通信を物理的に排除し、利用者のブラウザ（localStorage）のみでデータを完全に自己完結させることで、機密情報の漏洩リスクを根本からシャットアウトします。</p>
             </div>
           </div>
+
+          <div class="accordion" id="acc-5-2">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-5-2">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--tech">印刷</span>
+                <span class="accordion__title">不要な要素を自動で除外する印刷専用のスタイル調整</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-5-2">
+              <p>CSSによる印刷専用設計により、印刷やPDF出力時に不要なサイドバーや操作ボタンを自動で除外し、請求書の必須領域のみをA4用紙にぴったりと収めて綺麗に出力します。</p>
+            </div>
+          </div>
+
+          <div class="accordion" id="acc-5-3">
+            <button class="accordion__trigger" aria-expanded="false" aria-controls="body-5-3">
+              <div class="accordion__trigger-left">
+                <span class="accordion__tag accordion__tag--tech">軽量動作</span>
+                <span class="accordion__title">外部ライブラリをCDN経由で読み込む高速・軽量な動作</span>
+              </div>
+              <svg class="accordion__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion__body" id="body-5-3">
+              <p>複雑なビルド工程を必要とせず、ブラウザが直接解釈できる軽量なソースコードに拘ることで、ロード時間を最小限に抑え、どんな端末でも快適に動作するシステムを実現します。</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -1083,67 +1199,66 @@
           <span class="section-num">06</span>
           <h2 class="section-title" id="title-6">処理フロー</h2>
         </div>
-        <div class="section-body">
-          <div class="flow">
-            <div class="flow-step">
-              <div class="flow-step__left">
-                <div class="flow-step__num">1</div>
-                <div class="flow-step__line"></div>
-              </div>
-              <div class="flow-step__content">
-                <div class="flow-step__title">プロジェクトの追加</div>
-                <div class="flow-step__desc">クライアント名、納期、単価、初期ステータスを入力して新規案件を作成します。</div>
-              </div>
+
+        <div class="flow">
+          <div class="flow-step">
+            <div class="flow-step__left">
+              <div class="flow-step__num">1</div>
+              <div class="flow-step__line"></div>
             </div>
-            <div class="flow-step">
-              <div class="flow-step__left">
-                <div class="flow-step__num">2</div>
-                <div class="flow-step__line"></div>
-              </div>
-              <div class="flow-step__content">
-                <div class="flow-step__title">カンバンボードへの即時反映</div>
-                <div class="flow-step__desc">登録された情報に基づいて各ステータスカラムに案件カードが生成され、今月売上予定額が再計算されます。</div>
-              </div>
+            <div class="flow-step__content">
+              <div class="flow-step__title">プロジェクトの追加</div>
+              <div class="flow-step__desc">クライアント名、納期、単価、初期ステータスを入力して新規案件を作成します。</div>
             </div>
-            <div class="flow-step">
-              <div class="flow-step__left">
-                <div class="flow-step__num">3</div>
-                <div class="flow-step__line"></div>
-              </div>
-              <div class="flow-step__content">
-                <div class="flow-step__title">進捗状況の更新</div>
-                <div class="flow-step__desc">業務の進捗に合わせて、ドラッグ＆ドロップで案件カードをカラム間で移動させます。</div>
-              </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step__left">
+              <div class="flow-step__num">2</div>
+              <div class="flow-step__line"></div>
             </div>
-            <div class="flow-step">
-              <div class="flow-step__left">
-                <div class="flow-step__num">4</div>
-                <div class="flow-step__line"></div>
-              </div>
-              <div class="flow-step__content">
-                <div class="flow-step__title">請求元の登録</div>
-                <div class="flow-step__desc">自身の会社名、口座番号、インボイス登録番号を設定画面から保存します。</div>
-              </div>
+            <div class="flow-step__content">
+              <div class="flow-step__title">カンバンボードへの即時反映</div>
+              <div class="flow-step__desc">登録された情報に基づいて各ステータスカラムに案件カードが生成され、今月売上予定額が再計算されます。</div>
             </div>
-            <div class="flow-step">
-              <div class="flow-step__left">
-                <div class="flow-step__num">5</div>
-                <div class="flow-step__line"></div>
-              </div>
-              <div class="flow-step__content">
-                <div class="flow-step__title">請求書プレビュー生成</div>
-                <div class="flow-step__desc">対象のクライアントと月を選択し、インボイス対応の請求書を自動集計・プレビューします。</div>
-              </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step__left">
+              <div class="flow-step__num">3</div>
+              <div class="flow-step__line"></div>
             </div>
-            <div class="flow-step">
-              <div class="flow-step__left">
-                <div class="flow-step__num">6</div>
-                <div class="flow-step__line"></div>
-              </div>
-              <div class="flow-step__content">
-                <div class="flow-step__title">PDFとして出力</div>
-                <div class="flow-step__desc">ブラウザの印刷機能を呼び出し、請求書プレビューのみをPDFとしてローカル（PC内）へ書き出します。</div>
-              </div>
+            <div class="flow-step__content">
+              <div class="flow-step__title">進捗状況の更新</div>
+              <div class="flow-step__desc">業務の進捗に合わせて、ドラッグ＆ドロップで案件カードをカラム間で移動させます。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step__left">
+              <div class="flow-step__num">4</div>
+              <div class="flow-step__line"></div>
+            </div>
+            <div class="flow-step__content">
+              <div class="flow-step__title">請求元の登録</div>
+              <div class="flow-step__desc">自身の会社名、口座番号、インボイス登録番号を設定画面から保存します。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step__left">
+              <div class="flow-step__num">5</div>
+              <div class="flow-step__line"></div>
+            </div>
+            <div class="flow-step__content">
+              <div class="flow-step__title">請求書プレビュー生成</div>
+              <div class="flow-step__desc">対象のクライアントと月を選択し、インボイス対応の請求書を自動集計・プレビューします。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step__left">
+              <div class="flow-step__num">6</div>
+              <div class="flow-step__line"></div>
+            </div>
+            <div class="flow-step__content">
+              <div class="flow-step__title">PDFとして出力</div>
+              <div class="flow-step__desc">ブラウザの印刷機能を呼び出し、請求書プレビューのみをPDFとしてローカル（PC内）へ書き出します。</div>
             </div>
           </div>
         </div>
@@ -1159,27 +1274,22 @@
         </div>
         <div class="section-body">
           <div style="background: var(--color-base); padding: 32px 24px; line-height: 2.0;">
-            <p style="margin-bottom: 16px;">「請求業務をもっと手軽に、安全に」というビジョンのもと、セキュリティとシンプルさを極限まで高めて開発しました。サーバーにデータを送信しない完全クライアントサイド処理の構成にしたことで、実用性を損なうことなく絶対的な安心感と軽快な動作を両立できたと感じています。</p>
+            <p style="margin-bottom: 16px;">「請求業務をもっと手軽に、安全に」というビジョンのもと、セキュリティとシンプルさを極限まで高めて開発しました。データをサーバーに送信しない完全クライアントサイド処理の構成にしたことで、実用性を損なうことなく絶対的な安心感と軽快な動作を両立できたと感じています。</p>
             <p>今後もインボイス制度の変更等に柔軟に適応し、フリーランスや小規模事業者の方々にとって実用的なビジネスツールとして進化させていきます。</p>
           </div>
         </div>
       </section>
 
-    </main><!-- /content -->
+    </main>
 
     <!-- PAGE FOOTER -->
     <footer class="page-footer" role="contentinfo">
-      <span>© 2026 Junko Nishina</span>
+      <span>© 2026 深森呼吸</span>
       <span>本資料の転載・複製・改変を禁止します</span>
     </footer>
 
-  </div><!-- /main -->
-</div><!-- /layout -->
-
-<!-- BOTTOM BACK TO TOP (MOBILE ONLY) -->
-<button class="scroll-top-btn" id="scrollTopBtn" aria-label="ページトップへ戻る">
-  <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
+  </div>
+</div>
 
 <script>
   // ======================================================
@@ -1225,19 +1335,17 @@
     const windowHeight = window.innerHeight;
     const docHeight = document.documentElement.scrollHeight;
 
-    // ページ下端の場合は強制的に最後のセクションをアクティブ化
     if (scrollY + windowHeight >= docHeight - 5) {
       if (sections.length > 0) {
         currentId = sections[sections.length - 1].id.replace('sec-', '');
       }
     } else {
-      // 画面上部から少し下の位置（オフセット）を基準に現在のセクションを判定
       const offset = 150;
       for (const section of sections) {
         if (section.offsetTop - offset <= scrollY) {
           currentId = section.id.replace('sec-', '');
         } else {
-          break; // 以降のセクションはまだ到達していない
+          break;
         }
       }
     }
@@ -1274,32 +1382,25 @@
     }
   }
 
-  // メニューボタン（右上）
   toggle.addEventListener('click', () => {
-    const isOpen = sidebar.classList.contains('is-open');
-    sidebar.classList.toggle('is-open', !isOpen);
-    overlay.classList.toggle('is-active', !isOpen);
-    toggle.setAttribute('aria-expanded', String(!isOpen));
+    sidebar.classList.toggle('is-open');
+    overlay.classList.toggle('is-active');
   });
 
   overlay.addEventListener('click', () => {
     sidebar.classList.remove('is-open');
     overlay.classList.remove('is-active');
-    toggle.setAttribute('aria-expanded', 'false');
   });
 
-  // サイドバーリンクをクリックしたらSPでは閉じる
   document.querySelectorAll('.nav__item').forEach(item => {
     item.addEventListener('click', () => {
       if (isMobile()) {
         sidebar.classList.remove('is-open');
         overlay.classList.remove('is-active');
-        toggle.setAttribute('aria-expanded', 'false');
       }
     });
   });
 
-  // トップへ戻るボタン
   window.addEventListener('scroll', () => {
     if (isMobile()) {
       scrollTopBtn.classList.toggle('is-visible', window.scrollY > 200);

@@ -65,14 +65,14 @@
     }
     function dueClass(d, status) {
       if (!d) return '';
-      const ym = today().slice(0, 7);
-      if (!d.startsWith(ym)) return ''; // 今月以外は色付けしない
       const t = new Date(); t.setHours(0, 0, 0, 0);
       const due = new Date(d + 'T00:00:00');
       const diff = (due - t) / 86400000;
       if (diff < 0) return 'overdue';
       if (diff <= 3) return 'soon';
-      return 'this-month';
+      const ym = today().slice(0, 7);
+      if (d.startsWith(ym)) return 'this-month';
+      return '';
     }
     function esc(s) {
       return String(s || '').replace(/[&<>"']/g, c =>
@@ -511,9 +511,9 @@
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    /* 対応中（active）かつ対象月に納期がある案件 + 納期未設定の対応中案件 */
+    /* 対応中（active）かつ対象月に納期がある案件 */
     function invoiceSourceJobs(ym) {
-      return jobs.filter(j => j.status === 'active' && (!j.due || j.due.startsWith(ym)));
+      return jobs.filter(j => j.status === 'active' && j.due && j.due.startsWith(ym));
     }
 
     function refreshInvoiceClientOptions() {
