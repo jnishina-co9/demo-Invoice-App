@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <title>請求書作成＆管理アプリ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="appContainer" style="display: block;">
+
+    <header>
+      <h1>請求書作成＆管理アプリ</h1>
+      <span class="spacer"></span>
+      <div class="monthly-total" id="monthlyTotal"></div>
+      <div class="header-btns">
+        <button class="btn" id="clientsBtn"><i data-lucide="users"
+            style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>クライアント管理</button>
+        <button class="btn" id="invoiceBtn"><i data-lucide="file-text"
+            style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>請求書の作成</button>
+        <button class="btn" id="settingsBtn"><i data-lucide="settings"
+            style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>請求元の設定</button>
+        <button class="btn primary" id="addBtn"><i data-lucide="plus"
+            style="width:13px;height:13px;vertical-align:-2px;margin-right:3px"></i>新規プロジェクト</button>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <span class="status-label">ステータス</span>
+      <div class="status-chips" id="statusChips"></div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <h2 id="modalTitle">プロジェクトの新規追加</h2>
+        <div class="field">
+          <label>クライアント名</label>
+          <select id="fClient"></select>
+          <input id="fClientNew" placeholder="新しいクライアント名を入力" style="display:none; margin-top:8px">
+        </div>
+        <div class="field">
+          <label>担当者名</label>
+          <input id="fContact" placeholder="例：山田 太郎">
+        </div>
+        <div class="field">
+          <label>プロジェクト名</label>
+          <input id="fTitle" placeholder="事務代行・バックオフィス業務支援">
+        </div>
+        <div class="field">
+          <label>納期</label>
+          <div class="date-picker-wrap" id="duePicker" data-type="date">
+            <div class="date-input-row">
+              <i data-lucide="calendar-days" class="date-icon"></i>
+              <span class="date-display">日付を選択</span>
+              <button type="button" class="date-clear-btn" title="クリア">&#215;</button>
+            </div>
+            <div class="dp-popup" style="display:none">
+              <div class="dp-header">
+                <button type="button" class="dp-nav dp-prev">&#8592;</button>
+                <span class="dp-month-label"></span>
+                <button type="button" class="dp-nav dp-next">&#8594;</button>
+              </div>
+              <div class="dp-grid-head">
+                <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+              </div>
+              <div class="dp-grid"></div>
+            </div>
+          </div>
+          <input type="hidden" id="fDue">
+        </div>
+        <div class="field">
+          <label>ステータス</label>
+          <select id="fStatus"></select>
+        </div>
+        <div class="field">
+          <label>単価（税抜・円）</label>
+          <input id="fPrice" type="number" min="0" step="1000" placeholder="例：50000">
+        </div>
+        <div class="field">
+          <label>業務内容</label>
+          <textarea id="fMemo" class="memo-area" placeholder=""></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn danger" id="deleteBtn" style="display:none">削除</button>
+          <button class="btn" id="cancelBtn">キャンセル</button>
+          <button class="btn primary" id="saveBtn">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="clientsOverlay">
+      <div class="modal">
+        <h2>クライアント管理</h2>
+        <div class="client-list" id="clientList"></div>
+        <div class="client-add">
+          <input id="newClientName" placeholder="新しいクライアント名">
+        </div>
+        <p class="hint">・クライアント名を変更すると、「プロジェクト管理」内の名前も変更されます<br>・クライアント名を削除しても、「プロジェクト管理」内のデータは消えません</p>
+        <div class="modal-actions">
+          <button class="btn" id="clientsCloseBtn">閉じる</button>
+          <button class="btn primary" id="addClientBtn" style="white-space:nowrap">追加</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="settingsOverlay">
+      <div class="modal">
+        <h2>請求元の設定</h2>
+        <div class="field">
+          <label>会社名 / 屋号</label>
+          <input id="sName" placeholder="例：合同会社〇〇">
+        </div>
+        <div class="field">
+          <label>住所・連絡先</label>
+          <textarea id="sInfo" placeholder="〒100-0000&#10;東京都千代田区丸の内1-2-3&#10;hello@sample.com&#10;03-1111-2222"
+            style="min-height:110px"></textarea>
+        </div>
+        <div class="field">
+          <label>インボイス登録番号</label>
+          <input id="sReg" placeholder="T0000000000000">
+        </div>
+        <div class="field">
+          <label>振込先 - 金融機関名・支店名</label>
+          <input id="sBankName" placeholder="例：サンプル銀行 サンプル支店">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>口座の種類</label>
+            <input id="sBankType" placeholder="例：普通">
+          </div>
+          <div class="field">
+            <label>口座番号</label>
+            <input id="sBankNumber" placeholder="例：01234567">
+          </div>
+        </div>
+        <div class="field">
+          <label>口座名義</label>
+          <input id="sBankHolder" placeholder="例：ｼﾝｼﾝｺｷｭｳ">
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="settingsCancelBtn">キャンセル</button>
+          <button class="btn primary" id="settingsSaveBtn">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="invoiceOverlay">
+      <div class="modal wide">
+        <h2>請求書の作成</h2>
+        <div class="row2">
+          <div class="field">
+            <label>対象月</label>
+            <div class="date-picker-wrap" id="invoiceMonthPicker" data-type="month">
+              <div class="date-input-row">
+                <i data-lucide="calendar-days" class="date-icon"></i>
+                <span class="date-display">月を選択</span>
+                <button type="button" class="date-clear-btn" title="クリア">&#215;</button>
+              </div>
+              <div class="dp-popup" style="display:none">
+                <div class="dp-header">
+                  <button type="button" class="dp-nav dp-prev">&#8592;</button>
+                  <span class="dp-month-label"></span>
+                  <button type="button" class="dp-nav dp-next">&#8594;</button>
+                </div>
+                <div class="dp-grid-head">
+                  <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                </div>
+                <div class="dp-grid"></div>
+              </div>
+            </div>
+            <input type="hidden" id="iMonth">
+          </div>
+          <div class="field">
+            <label>クライアント</label>
+            <select id="iClient"></select>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>発行日</label>
+            <div class="date-picker-wrap" id="invoiceIssuePicker" data-type="date">
+              <div class="date-input-row">
+                <i data-lucide="calendar-days" class="date-icon"></i>
+                <span class="date-display">日付を選択</span>
+                <button type="button" class="date-clear-btn" title="クリア">&#215;</button>
+              </div>
+              <div class="dp-popup" style="display:none">
+                <div class="dp-header">
+                  <button type="button" class="dp-nav dp-prev">&#8592;</button>
+                  <span class="dp-month-label"></span>
+                  <button type="button" class="dp-nav dp-next">&#8594;</button>
+                </div>
+                <div class="dp-grid-head">
+                  <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                </div>
+                <div class="dp-grid"></div>
+              </div>
+            </div>
+            <input type="hidden" id="iIssue">
+          </div>
+          <div class="field">
+            <label>支払期日</label>
+            <div class="date-picker-wrap" id="invoiceDuePicker" data-type="date">
+              <div class="date-input-row">
+                <i data-lucide="calendar-days" class="date-icon"></i>
+                <span class="date-display">日付を選択</span>
+                <button type="button" class="date-clear-btn" title="クリア">&#215;</button>
+              </div>
+              <div class="dp-popup" style="display:none">
+                <div class="dp-header">
+                  <button type="button" class="dp-nav dp-prev">&#8592;</button>
+                  <span class="dp-month-label"></span>
+                  <button type="button" class="dp-nav dp-next">&#8594;</button>
+                </div>
+                <div class="dp-grid-head">
+                  <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                </div>
+                <div class="dp-grid"></div>
+              </div>
+            </div>
+            <input type="hidden" id="iDue">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>敬称</label>
+            <select id="iHonorific">
+              <option value="onchu">御中</option>
+              <option value="sama">様</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>請求書番号</label>
+            <input id="iNo">
+          </div>
+        </div>
+        <div class="field">
+          <label>備考</label>
+          <textarea id="iDetail" placeholder="備考欄に表示させたい文章を入力してください。&#10;例：恐れ入りますが、振込手数料はお客様の負担でお願いいたします。"></textarea>
+        </div>
+        <div id="invoiceSheet"></div>
+        <div class="modal-actions">
+          <button class="btn" id="invoiceCloseBtn">閉じる</button>
+          <button class="btn primary" id="invoicePrintBtn" style="display:none"><i data-lucide="file-text"
+              style="width:13px;height:13px;vertical-align:-2px;margin-right:5px"></i>PDFを一括ダウンロード</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

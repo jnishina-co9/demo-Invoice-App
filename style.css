@@ -1,0 +1,1200 @@
+    :root {
+      --bg: #fff;
+      --card: #ffffff;
+      --text: #333333;
+      --sub: #999999;
+      --border: #e5e7eb;
+
+      /* ステータスカラー（左ボーダー・ドット色） */
+      --c-pending: #FED7E2;
+      /* 未着手 パウダーピンク  */
+      --c-active: #38A169;
+      /* 対応中 エメラルドグリーン */
+      --c-issued: #1E3A8A;
+      /* 請求済み ディープブルー */
+      --c-paid: #F6AD55;
+      /* 入金済み ゴールド */
+
+      /* カード背景（薄め） */
+      --cbg-pending: #FFF0F4;
+      --cbg-active: #F0FFF4;
+      --cbg-issued: #EBF0FF;
+      --cbg-paid: #FFFBF0;
+
+      /* フィルターバッジ色 */
+      --filter-all: #ECF0F1;
+      --filter-pending: #FED7E2;
+      --filter-active: #38A169;
+      --filter-issued: #1E3A8A;
+      --filter-paid: #F6AD55;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: var(--text);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      min-height: 56px;
+    }
+
+    header h1 {
+      font-family: "Outfit", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .monthly-total {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Outfit", sans-serif;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .monthly-total .mt-amount {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    #logoutBtn {
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 900px) {
+      header {
+        padding-right: 52px;
+      }
+      #logoutBtn {
+        position: fixed;
+        right: 12px;
+        top: 12px;
+        z-index: 20;
+        padding: 8px;
+        font-size: 0;
+        line-height: 0;
+      }
+      #logoutBtn svg {
+        margin-right: 0 !important;
+      }
+    }
+
+    .btn {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: transparent;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-family: "Noto Sans JP", sans-serif;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.85);
+      transition: background .15s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn.primary {
+      background: #fff;
+      border-color: #fff;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .btn.primary:hover {
+      background: #f0f0f0;
+    }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar {
+      background: var(--bg);
+      border-bottom: 2px solid var(--text);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      min-height: 48px;
+    }
+
+    .status-label {
+      font-family: "Outfit", sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sub);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-right: 8px;
+    }
+
+    .status-chips {
+      display: flex;
+      gap: 0;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .status-chip {
+      padding: 6px 16px;
+      font-family: "Outfit", sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.18s;
+      border-left: 1px solid var(--border);
+      cursor: default;
+    }
+
+    .status-chip:first-child {
+      border-left: none;
+    }
+
+    .status-chip .chip-count {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .status-chip[data-status="pending"]:hover {
+      color: var(--c-pending);
+    }
+
+    .status-chip[data-status="active"]:hover {
+      color: var(--c-active);
+    }
+
+    .status-chip[data-status="issued"]:hover {
+      color: var(--c-issued);
+    }
+
+    .status-chip[data-status="paid"]:hover {
+      color: var(--c-paid);
+    }
+
+    /* ===== BOARD ===== */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      padding: 0;
+      align-items: start;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (max-width: 900px) {
+      .board {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .board {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .column {
+      border-right: 1px solid var(--border);
+      padding: 0;
+      min-height: 300px;
+    }
+
+    .column:last-child {
+      border-right: none;
+    }
+
+    .column.dragover {
+      outline: 2px solid #ef4444;
+      outline-offset: -3px;
+      background: rgba(239, 68, 68, 0.04);
+    }
+
+    .col-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      font-family: "Outfit", sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 56px;
+      background: var(--bg);
+      z-index: 1;
+    }
+
+    .col-dot {
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
+    .col-head .count {
+      margin-left: auto;
+      font-family: "Outfit", sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sub);
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      min-height: 40px;
+      padding: 12px;
+      gap: 8px;
+    }
+
+    /* ===== CARD ===== */
+    .card-item {
+      border-left: 3px solid;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: opacity .12s;
+      border-top: none;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .card-item:hover {
+      opacity: .85;
+    }
+
+    .card-item.dragging {
+      opacity: .3;
+    }
+
+    .card-item[data-status="pending"] {
+      background: var(--cbg-pending);
+      border-left-color: var(--c-pending);
+    }
+
+    .card-item[data-status="active"] {
+      background: var(--cbg-active);
+      border-left-color: var(--c-active);
+    }
+
+    .card-item[data-status="issued"] {
+      background: var(--cbg-issued);
+      border-left-color: var(--c-issued);
+    }
+
+    .card-item[data-status="paid"] {
+      background: var(--cbg-paid);
+      border-left-color: var(--c-paid);
+    }
+
+    .card-item .card-client {
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 3px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    .card-item .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .card-item .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .card-item .due.overdue {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    .card-item .due.soon {
+      color: #d97706;
+      font-weight: 700;
+    }
+
+    .card-item .due.this-month {
+      color: #dc2626;
+      font-weight: 600;
+    }
+
+    .card-item .price {
+      font-family: "Outfit", sans-serif;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .empty-hint {
+      text-align: center;
+      color: var(--sub);
+      font-size: 12px;
+      padding: 20px 4px;
+      letter-spacing: 0.03em;
+    }
+
+    /* ===== MODAL ===== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    .modal h2 {
+      font-family: "Outfit", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--text);
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sub);
+      margin-bottom: 5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      font-size: 14px;
+      font-family: "Noto Sans JP", sans-serif;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: border-color .12s;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--text);
+      background: #fff;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .memo-area {
+      min-height: 220px;
+      line-height: 1.7;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      padding: 10px;
+    }
+
+    .modal .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-family: "Noto Sans JP", sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .modal .btn:hover {
+      background: #f5f5f5;
+    }
+
+    .modal .btn.primary {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .modal .btn.primary:hover {
+      background: #111;
+    }
+
+    .modal .btn.danger {
+      color: #dc2626;
+      border-color: #fecaca;
+      background: #fff;
+    }
+
+    .modal .btn.danger:hover {
+      background: #fef2f2;
+    }
+
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* クライアント管理 */
+    .client-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 40vh;
+      overflow-y: auto;
+      margin-bottom: 14px;
+    }
+
+    .client-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .client-row input {
+      flex: 1;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: "Noto Sans JP", sans-serif;
+      outline: none;
+    }
+
+    .client-row input:focus {
+      border-color: var(--text);
+    }
+
+    .client-row .jobs-count {
+      font-size: 11px;
+      color: var(--sub);
+      white-space: nowrap;
+    }
+
+    .client-add {
+      display: flex;
+      gap: 8px;
+    }
+
+    .client-add input {
+      flex: 1;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: "Noto Sans JP", sans-serif;
+      outline: none;
+    }
+
+    .client-add input:focus {
+      border-color: var(--text);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--sub);
+      margin-top: 10px;
+      line-height: 1.7;
+    }
+
+    /* 設定 */
+    .bank-row {
+      border: 1px solid var(--border);
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .bank-row .bank-head {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .bank-row .bank-label {
+      flex: 1;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: "Noto Sans JP", sans-serif;
+      outline: none;
+    }
+
+    .bank-row .bank-label:focus {
+      border-color: var(--text);
+    }
+
+    .bank-row .bank-details {
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: "Noto Sans JP", sans-serif;
+      resize: vertical;
+      min-height: 52px;
+      outline: none;
+    }
+
+    .bank-row .bank-details:focus {
+      border-color: var(--text);
+    }
+
+    /* ===== カスタム日付ピッカー ===== */
+    .date-picker-wrap {
+      position: relative;
+    }
+
+    .date-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      font-size: 14px;
+      font-family: "Noto Sans JP", sans-serif;
+      background: #fafafa;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .12s;
+    }
+
+    .date-input-row:hover,
+    .date-input-row.open {
+      border-color: var(--text);
+      background: #fff;
+    }
+
+    .date-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--sub);
+      pointer-events: none;
+    }
+
+    .date-display {
+      flex: 1;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .date-display.empty {
+      color: var(--sub);
+    }
+
+    .date-clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--sub);
+      font-size: 16px;
+      line-height: 1;
+      padding: 0 2px;
+      display: none;
+    }
+
+    .date-clear-btn:hover {
+      color: var(--text);
+    }
+
+    .dp-popup {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      z-index: 200;
+      background: #fff;
+      border: 1px solid var(--text);
+      padding: 12px;
+      width: 280px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .dp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .dp-nav {
+      background: none;
+      border: 1px solid var(--border);
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      transition: background .12s;
+    }
+
+    .dp-nav:hover {
+      background: #f0f0f0;
+    }
+
+    .dp-month-label {
+      font-family: "Outfit", sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .dp-grid-head {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .dp-grid-head span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sub);
+      padding: 4px 0;
+    }
+
+    .dp-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .dp-cell {
+      text-align: center;
+      padding: 5px 0;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 0;
+      transition: background .1s;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dp-cell:hover:not(.dp-empty):not(.dp-selected) {
+      background: #f0f0f0;
+    }
+
+    .dp-cell.dp-empty {
+      cursor: default;
+    }
+
+    .dp-cell.dp-today {
+      font-weight: 700;
+      color: var(--c-active);
+    }
+
+    .dp-cell.dp-selected {
+      background: var(--text);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .dp-cell.dp-selected.dp-today {
+      background: var(--c-active);
+    }
+
+    /* 請求書モーダル */
+    .modal.wide {
+      max-width: 860px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* ── 請求書シート ── */
+    .sheet {
+      background: #fff;
+      color: #1a1d23;
+      padding: 36px 40px;
+      font-size: 12px;
+      line-height: 1.65;
+      border: 1px solid #ccc;
+      margin-top: 16px;
+      font-family: "Noto Sans JP", sans-serif;
+    }
+
+    /* タイトル */
+    .sheet-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 14px;
+      text-indent: 14px;
+      margin-bottom: 6px;
+    }
+
+    .sheet-title-rule {
+      border: none;
+      border-top: 3px double #1a1d23;
+      margin-bottom: 18px;
+    }
+
+    /* 宛先（左）＋メタ+発行者（右）を横並び */
+    .sheet-meta-from {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    /* 左：宛先 */
+    .sheet-meta-from .to-col {
+      flex: 1;
+      padding-top: 2px;
+    }
+
+    .sheet-meta-from .to-col .client-name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* 右：発行日・番号・登録番号・発行者 */
+    .sheet-meta-from .meta-from-inner {
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.9;
+      flex-shrink: 0;
+    }
+
+    .sheet-meta-from .meta-from-inner .seller-name {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .sheet-meta-from .meta-from-inner .reg-line {
+      margin-top: 6px;
+    }
+
+    /* 「下記の通り〜」テキスト */
+    .sheet-greeting {
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    /* ご請求金額 + 振込先・支払期日 のボックス */
+    .sheet-amount-box {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      border: 1px solid #888;
+      table-layout: fixed;
+    }
+
+    .sheet-amount-box td {
+      border: 1px solid #888;
+      padding: 0;
+      vertical-align: middle;
+    }
+
+    /* 左右それぞれ50%ずつ */
+    .sheet-amount-box .col-left-label {
+      width: 12%;
+    }
+
+    .sheet-amount-box .col-left-value {
+      width: 38%;
+    }
+
+    .sheet-amount-box .col-right-label {
+      width: 12%;
+    }
+
+    .sheet-amount-box .col-right-value {
+      width: 38%;
+    }
+
+    /* 左セル：ご請求金額ラベル */
+    .sheet-amount-box .amt-label-cell {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 6px;
+      background: #f2f2f2;
+    }
+
+    /* 左セル：金額値 */
+    .sheet-amount-box .amt-value-cell {
+      padding: 8px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      font-family: "Outfit", sans-serif;
+      white-space: nowrap;
+    }
+
+    /* 右上セル：振込先ラベル */
+    .sheet-amount-box .bank-label-cell {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px;
+      background: #f2f2f2;
+      border-bottom: 1px solid #888;
+    }
+
+    /* 右上セル：振込先内容 */
+    .sheet-amount-box .bank-value-cell {
+      padding: 6px 12px;
+      font-size: 12px;
+      line-height: 1.7;
+      border-bottom: 1px solid #888;
+    }
+
+    /* 右下セル：支払期日ラベル */
+    .sheet-amount-box .due-label-cell {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px;
+      background: #f2f2f2;
+      white-space: nowrap;
+    }
+
+    /* 右下セル：支払期日値 */
+    .sheet-amount-box .due-value-cell {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    /* 品目明細表 */
+    .sheet-items {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0;
+    }
+
+    .sheet-items th,
+    .sheet-items td {
+      border: 1px solid #888;
+      padding: 0 10px;
+      font-size: 12px;
+      height: 28px;
+    }
+
+    .sheet-items thead tr {
+      background: #d0d0d0;
+    }
+
+    .sheet-items th {
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .sheet-items tbody tr:nth-child(odd) {
+      background: #fff;
+    }
+
+    .sheet-items tbody tr:nth-child(even) {
+      background: #f5f5f5;
+    }
+
+    .sheet-items td.num {
+      text-align: right;
+      font-family: "Outfit", sans-serif;
+      white-space: nowrap;
+    }
+
+    /* 品名列は広く */
+    .sheet-items .col-name {
+      width: auto;
+    }
+
+    .sheet-items .col-price {
+      width: 110px;
+    }
+
+    .sheet-items .col-amt {
+      width: 110px;
+    }
+
+    /* 空行（高さはth/tdと同じ height で統一） */
+    .sheet-items tr.empty-row td {}
+
+    /* 合計エリア：品名テーブルの右2列に揃える */
+    .sheet-totals-wrap {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+    }
+
+    .sheet-totals-wrap .t-spacer {
+      border: none;
+      background: transparent;
+    }
+
+    .sheet-totals-wrap td {
+      padding: 5px 10px;
+      font-size: 12px;
+      border: 1px solid #888;
+      height: 28px;
+    }
+
+    .sheet-totals-wrap .t-label {
+      background: #f2f2f2;
+      font-weight: 600;
+      text-align: center;
+      width: 110px;
+      border: 1px solid #888;
+    }
+
+    .sheet-totals-wrap .t-value {
+      text-align: right;
+      font-family: "Outfit", sans-serif;
+      white-space: nowrap;
+      width: 110px;
+      border: 1px solid #888;
+    }
+
+    .sheet-totals-wrap .grand .t-label,
+    .sheet-totals-wrap .grand .t-value {
+      font-weight: 700;
+      font-size: 13px;
+      background: #d0d0d0;
+    }
+
+    /* 固定文言 */
+    .sheet-footer-note {
+      font-size: 11.5px;
+      margin-bottom: 8px;
+    }
+
+    /* 備考 */
+    .sheet-biko {
+      border: 1px solid #888;
+      padding: 4px 8px 12px;
+      font-size: 12px;
+      white-space: pre-line;
+      min-height: 60px;
+    }
+
+    .sheet-biko .biko-head {
+      font-weight: 700;
+      font-size: 11px;
+      margin: 0 0 2px;
+      display: block;
+      line-height: 1.4;
+    }
+
+    .invoice-preview {
+      margin-top: 16px;
+    }
+
+    .invoice-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 0 22px;
+    }
+
+    .invoice-actions .btn {
+      min-width: 140px;
+    }
+
+    /* ===== PRINT ===== */
+    @page {
+      size: A4 portrait;
+      margin: 14mm 15mm;
+    }
+
+    @media print {
+
+      /* ① グレー背景を印刷に反映 */
+      .sheet,
+      .sheet * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      html,
+      body {
+        background: #fff !important;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+
+      body.printing-single #loginContainer {
+        display: none !important;
+      }
+
+      body.printing-single #appContainer > :not(#invoiceOverlay) {
+        display: none !important;
+      }
+
+      body.printing-single #invoiceOverlay {
+        display: block !important;
+        position: static !important;
+        visibility: visible !important;
+        background: none !important;
+        padding: 0 !important;
+      }
+
+      body.printing-single #invoiceOverlay .modal {
+        display: block !important;
+        position: static !important;
+        visibility: visible !important;
+        width: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        background: #fff !important;
+        overflow: visible !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+
+      body.printing-single #invoiceOverlay .modal> :not(#invoiceSheet) {
+        display: none !important;
+      }
+
+      body.printing-single #invoiceSheet {
+        display: block !important;
+        visibility: visible !important;
+      }
+
+      body.printing-single .invoice-preview:not(.print-preview-target) {
+        display: none;
+      }
+
+      body.printing-single .invoice-preview.print-preview-target {
+        display: block !important;
+        visibility: visible !important;
+        margin: 0 !important;
+      }
+
+      body.printing-single .invoice-preview.print-preview-target .sheet,
+      body.printing-single .invoice-preview.print-preview-target .sheet * {
+        visibility: visible !important;
+      }
+
+      body.printing-single .invoice-preview.print-preview-target .sheet {
+        display: block !important;
+        position: static !important;
+        background: #fff !important;
+        width: 100%;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      body:not(.printing-single) .sheet,
+      body:not(.printing-single) .sheet * {
+        visibility: visible !important;
+      }
+
+      body:not(.printing-single) .sheet {
+        display: block !important;
+        position: static !important;
+        width: 100%;
+        border: none;
+        margin: 0 0 18mm;
+        padding: 0;
+        page-break-after: always;
+      }
+
+      body:not(.printing-single) .invoice-preview {
+        visibility: visible !important;
+        display: block !important;
+      }
+
+      .invoice-actions {
+        display: none;
+      }
+    }
+
+    /* ===== 月ピッカー用追加スタイル ===== */
+    .date-picker-wrap[data-type="month"] .dp-grid-head {
+      display: none;
+    }
+    .date-picker-wrap[data-type="month"] .dp-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .date-picker-wrap[data-type="month"] .dp-month-cell {
+      aspect-ratio: auto;
+      padding: 10px 0;
+      font-size: 14px;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
